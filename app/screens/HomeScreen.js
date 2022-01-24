@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, SafeAreaView } from "react-native";
-import { auth, db } from "../../Firebase/firebase";
+import { auth, db } from "../../firebase/firebase";
 import React from "react";
 
 export default function HomeScreen({}) {
