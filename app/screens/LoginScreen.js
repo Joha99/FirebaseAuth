@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { auth } from "../../Firebase/firebase";
+import { auth, db } from "../../Firebase/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 
-export default function LoginScreen({}) {
+export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -34,12 +35,25 @@ export default function LoginScreen({}) {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        setIsSignedIn(true);
         console.log("User signed in", user);
-        alert("succesful sign in");
+        navigation.navigate("Home");
       })
       .catch((error) => {
         const errorMessage = error.message;
         console.log("Error signing in", errorMessage);
+      });
+  };
+
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        setIsSignedIn(false);
+        console.log("User signed out");
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.log("Error signing out", errorMessage);
       });
   };
 
@@ -66,9 +80,19 @@ export default function LoginScreen({}) {
       </View>
       <View style={styles.buttonContainer}>
         {/* Sign in */}
-        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+        {isSignedIn === false && (
+          <TouchableOpacity onPress={handleSignIn} style={styles.button}>
+            <Text style={styles.buttonText}>Sign in</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Sign out */}
+        {isSignedIn === true && (
+          <TouchableOpacity onPress={handleSignOut} style={styles.button}>
+            <Text style={styles.buttonText}>Sign out</Text>
+          </TouchableOpacity>
+        )}
+
         {/* Register */}
         <TouchableOpacity
           onPress={handleRegister}
